@@ -29,20 +29,20 @@ func main() {
 
 	// fetch block events of topshot Market.MomentPurchased events for the past 1000 blocks
 	blockEvents, err := flowClient.GetEventsForHeightRange(context.Background(), client.EventRangeQuery{
-		Type:        "A.c1e4f4f4c4257510.Market.MomentPurchased",
-		StartHeight: latestBlock.Height - 1000,
+		Type:        "A.c1e4f4f4c4257510.Market.MomentListed",
+		StartHeight: latestBlock.Height - 10000,
 		EndHeight:   latestBlock.Height,
 	})
 	handleErr(err)
 
 	for _, blockEvent := range blockEvents {
 		for _, purchaseEvent := range blockEvent.Events {
-			// loop through the Market.MomentPurchased events in this blockEvent
-			e := topshot.MomentPurchasedEvent(purchaseEvent.Value)
+			// loop through the Market.MomentListed events in this blockEvent
+			e := topshot.MomentListedEvent(purchaseEvent.Value)
 			fmt.Println(e)
-			saleMoment, err := topshot.GetSaleMomentFromOwnerAtBlock(flowClient, blockEvent.Height-1, *e.Seller(), e.Id())
+			listingMoment, err := topshot.GetSaleMomentFromOwnerAtBlock(flowClient, blockEvent.Height-1, *e.Seller(), e.Id())
 			handleErr(err)
-			fmt.Println(saleMoment)
+			fmt.Println(listingMoment)
 			fmt.Printf("transactionID: %s, block height: %d\n",
 				purchaseEvent.TransactionID.String(), blockEvent.Height)
 			fmt.Println()
